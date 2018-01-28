@@ -1,0 +1,20 @@
+<%include ./partials/header%>
+<nav class="navbar navbar-dark bg-dark">
+    <div>
+        <form class="form-inline" method="POST" action="http://localhost:3000/articles">
+            <input class="form-control mr-sm-2" type="text" placeholder="Article Name" name="name">
+            <input class="form-control mr-sm-2" type="number" placeholder="Article Price" name="price" step="0.01" min="0">
+            <input class="form-control mr-sm-2" type="text" placeholder="Article Shop" name="shop">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Submit</button>
+        </form>
+    </div>
+</nav>
+<div class="row">
+    <div class="col-md-6">
+        <ul class="list-group" id="articles_anchor">
+        </ul>
+    </div>
+    <div class="col-md-6">
+    </div>
+</div>
+<%include ./partials/footer%>
