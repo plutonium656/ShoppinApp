@@ -5,16 +5,19 @@ var   express = require("express"),
         indexRoutes = require("./routes/index"),
         path = require("path"),
         config = require("./config/database"),
-        cors = require("cors");
+        cors = require("cors"),
+        apiRoutes = require("./routes/api");
 
 const port = 3000;
 mongoose.connect(config.database);
 app.use(express.static(path.join(__dirname, "public")));
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json());
+app.use(cors());
 app.set("view engine", "ejs");
 app.use("/",indexRoutes);
-app.use(cors());
+app.use("/api",apiRoutes);
+
 
 
 
