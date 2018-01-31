@@ -15,7 +15,8 @@
             <button class="btn btn-sm btn-danger float-right" v-on:click="removeFromShoppingList(shoppingList[index])">X</button>
           </li>
       </ul>
-      <button class="btn btn-lg btn-success fullwidth" v-on:click="saveLocalList">Liste Speichern</button>
+      <button class="btn btn-lg btn-success fullwidth" v-on:click="saveAsNewListToDb">Liste Speichern</button>
+      <button class="btn btn-sm btn-primary" v-on:click="getListFromDatabase('5a71c97d582e2743007b84da')">LoadList</button>
       <li class="list-group-item">{{sl_sum()}}€</li>
   </div>
   </div>
@@ -80,6 +81,23 @@ export default {
                 sum += this.shoppingList[i].quantity * this.shoppingList[i].price;
             }
             return sum.toFixed(2);
+        },
+        saveAsNewListToDb: function(){
+            var refObject = [];
+            this.shoppingList.forEach(function(item){
+                refObject.push({
+                    _id : item._id,
+                    quantity : item.quantity
+                });
+            });
+            this.$http.post("http://localhost:3000/api/list", refObject).then(function(res){
+                console.log(res);
+            });
+        },
+        getListFromDatabase:function(id){
+            this.$http.get("http://localhost:3000/api/list/"+id).then(function(res){
+                console.log(res.body.articles);
+            });
         }
     },
     computed:{
