@@ -3,8 +3,11 @@ var mongoose = require("mongoose");
 var listSchema = mongoose.Schema({
     name:String,
     articles:[{
-        type:mongoose.Schema.Types.ObjectId, 
-        ref: "Article"
+        article:{
+            type:mongoose.Schema.Types.ObjectId, 
+            ref: "Article"
+        },
+        quantity:Number
     }]
 });
 
@@ -20,6 +23,15 @@ module.exports.addItemToList = function(id,item,callback){
     List.findById(id,function(err,list){
         if(err)throw err;
         list.articles.push(item);
+        list.save(callback);
+    });
+}
+
+module.exports.saveAsNewList = function(items, callback){
+    List.create({}, function(err,list){
+        if(err)throw err;
+        list.name = list._id;
+        list.articles = items;
         list.save(callback);
     });
 }

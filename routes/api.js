@@ -52,4 +52,21 @@ router.delete("/article/:id", function(req,res){
     });
 });
 
+router.post("/list", function(req, res){
+    List.saveAsNewList(req.body, function(err){
+        if(err) throw err;
+        else res.send({
+            success:true,
+            msg:"saved list to db"
+        });
+    });
+});
+
+router.get("/list/:id", function(req,res){
+    List.findById(req.params.id).populate('articles.article').
+    exec(function(err,articles){
+        if(err)throw err;
+        console.log()
+    });
+});
 module.exports = router;
