@@ -16,18 +16,26 @@
           </li>
       </ul>
       <button class="btn btn-lg btn-success fullwidth" v-on:click="saveAsNewListToDb">Liste Speichern</button>
-      <button class="btn btn-sm btn-primary" v-on:click="getListFromDatabase('5a71c97d582e2743007b84da')">LoadList</button>
+      <button class="btn btn-sm btn-primary fullwidth" v-on:click="getListFromDatabase">LoadList</button>
       <li class="list-group-item">{{sl_sum()}}€</li>
   </div>
   </div>
 </template>
 
 <script>
+import Vue from 'vue';
+import EventBus from "./event-bus";
 import _ from "lodash";
+
+
+
 export default {
     beforeMount:function(){
         this.getArticlesFromDatabase();
         this.loadLocalList();
+    },
+    mounted:function(){
+        EventBus.$on("on-list-selection", this.setListId);
     },
     updated:function(){
         this.getArticlesFromDatabase();
@@ -35,7 +43,8 @@ export default {
     data:function(){
         return{
             articles:[],
-            shoppingList:[]
+            shoppingList:[],
+            listSelection:undefined
         }
     },
     methods:{
@@ -57,7 +66,9 @@ export default {
                     return;
                 }
             }
-            article.quantity = 1;
+            if(!article.quantity){
+                article.quantity = 1;
+            }
             this.shoppingList.push(article); 
         },
         removeFromShoppingList:function(article){
@@ -86,7 +97,7 @@ export default {
             var refObject = [];
             this.shoppingList.forEach(function(item){
                 refObject.push({
-                    _id : item._id,
+                    article : item._id,
                     quantity : item.quantity
                 });
             });
@@ -95,9 +106,29 @@ export default {
             });
         },
         getListFromDatabase:function(id){
-            this.$http.get("http://localhost:3000/api/list/"+id).then(function(res){
-                console.log(res.body.articles);
-            });
+            if(id != undefined){
+                this.$http.get("http://localhost:3000/api/list/"+id).then(function(res){
+                    if(res.body.success){
+                    var newArr = [];
+                    res.body.data.articles.forEach(function(article){
+                        var newArt = article.article;
+                        newArt.quantity = article.quantity;
+                        newArr.push(newArt);
+                    });
+                    this.shoppingList = newArr;
+                    } else {
+                        //TODO error handling
+                        console.log(res.body.msg);
+                    }
+                });
+            } else {
+                console.log("id is "+ref.listSelection);
+            }
+        },
+        setListId:function(id){
+            this.listSelection = id;
+            console.log("id selection changed to:"+this.listSelection);
+            this.getListFromDatabase(this.listSelection);
         }
     },
     computed:{

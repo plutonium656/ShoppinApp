@@ -62,11 +62,33 @@ router.post("/list", function(req, res){
     });
 });
 
+router.get("/list", function(req,res){
+    List.find(function(err,lists){
+        if(err){
+            res.send({
+                success:false,
+                msg:err
+            })
+        } else { 
+            res.send({
+            success:true,
+            msg:"retrieved all lists from database",
+            data:lists
+        })}
+
+    });
+});
+
 router.get("/list/:id", function(req,res){
+    console.log(req.params.id);
     List.findById(req.params.id).populate('articles.article').
     exec(function(err,articles){
         if(err)throw err;
-        console.log()
+        res.send({
+            success:true,
+            msg:"loaded list with "+req.params.id+" from database",
+            data:articles
+        })
     });
 });
 module.exports = router;
